@@ -3,10 +3,11 @@
  * https://limelabs.io
  * 
  * lime labs wifi thermocouple
+ * 
  * ESP32 / ESP8266 based WiFi thermocouple with RESTful API. Primarily used in our "lime labs reflow controller" project (https://github.com/lime-labs/lime-labs-reflow-controller)
  * 
  * @author: Peter Winter <code@limelabs.io>
- * @version: 0.0.1
+ * @version: 1.0.0
  * @date: 10/24/2018
  */
 
