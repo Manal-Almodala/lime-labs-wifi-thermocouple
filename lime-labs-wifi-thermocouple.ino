@@ -87,6 +87,7 @@ void setup() {
   rest.set_name("lime-labs-thermocouple");
 
   // Connect to WiFi
+  WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(100);
