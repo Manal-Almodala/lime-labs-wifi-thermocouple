@@ -1,20 +1,18 @@
-/*
+/* THIS TCP ONLY SERVER VERSION IS WIP!!!
  * Lime Labs GmbH
  * https://limelabs.io
  * 
  * lime labs wifi thermocouple
  * 
- * ESP32 / ESP8266 based WiFi thermocouple with RESTful API. Primarily used in our "lime labs remote reflow controller" project
- * (https://github.com/lime-labs/lime-labs-remote-reflow-controller)
+ * ESP32 / ESP8266 based WiFi thermocouple. Primarily used in our "lime labs remote reflow controller" project (https://github.com/lime-labs/lime-labs-remote-reflow-controller)
  * 
  * @author: Peter Winter <code@limelabs.io>
- * @version: 1.0.1
+ * @version: 0.0.1
  * @initialrelease: 10/24/2018
  */
 
 // change to <WiFi.h> for ESP32
 #include <ESP8266WiFi.h>
-#include <aREST.h>
 #include <SPI.h>
 #include <Adafruit_MAX31855.h>
 
@@ -26,19 +24,16 @@
 #define MAXCLK  D7
 
 // WiFi parameters
-#define WIFI_SSID     "Your WiFi SSID"
-#define WIFI_PASSWORD "Your WiFi password"
+#define WIFI_SSID     "yourwifi"
+#define WIFI_PASSWORD "yourpassword"
 
 // The port to listen for incoming TCP connections
-#define LISTEN_PORT 80
+#define LISTEN_PORT 4000
 
 // #################### END SETUP ####################
 
 // initialize the thermocouple
 Adafruit_MAX31855 thermocouple(MAXCLK, MAXCS, MAXDO);
-
-// Create aREST instance
-aREST rest = aREST();
 
 // Create an instance of the server
 WiFiServer server(LISTEN_PORT);
@@ -73,11 +68,8 @@ void setup() {
   Serial.print("Internal Temp = ");
   Serial.println(thermocouple.readInternal());
 
-  // init variables and update them right away to a real value, then expose them via the REST API
+  // init variables and update them right away to a real value
   updateTemps();
-  
-  rest.variable("celsius", &celsius);
-  rest.variable("fahrenheit", &fahrenheit);
 
   Serial.print("Connecting to WiFi: ");
   Serial.println(WIFI_SSID);
@@ -93,14 +85,13 @@ void setup() {
 
   // Start the server
   server.begin();
-  Serial.print("HTTP server started, listening on ");
+  Serial.print("TCP server started, listening on ");
   Serial.print(WiFi.localIP());
   Serial.print(":");
   Serial.println(LISTEN_PORT);
 }
 
 void loop() {
-  // Handle REST calls
   WiFiClient client = server.available();
   if (!client) {
     return;
@@ -108,8 +99,11 @@ void loop() {
   while(!client.available()){
     delay(1);
   }
+  Serial.println("Client connected");
   // update the temperature variables
   updateTemps();
   
-  rest.handle(client);
+  client.write(celsius);
+  client.stop();
+  Serial.println("Client disconnected");
 }
