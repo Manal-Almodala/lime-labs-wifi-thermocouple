@@ -1,4 +1,5 @@
 /* THIS TCP ONLY SERVER VERSION IS WIP!!!
+ *  
  * Lime Labs GmbH
  * https://limelabs.io
  * 
@@ -7,7 +8,7 @@
  * ESP32 / ESP8266 based WiFi thermocouple. Primarily used in our "lime labs remote reflow controller" project (https://github.com/lime-labs/lime-labs-remote-reflow-controller)
  * 
  * @author: Peter Winter <code@limelabs.io>
- * @version: 0.0.1
+ * @version: 0.0.2
  * @initialrelease: 10/24/2018
  */
 
@@ -24,8 +25,8 @@
 #define MAXCLK  D7
 
 // WiFi parameters
-#define WIFI_SSID     "yourwifi"
-#define WIFI_PASSWORD "yourpassword"
+#define WIFI_SSID     "Your WiFi SSID"
+#define WIFI_PASSWORD "Your WiFi password"
 
 // The port to listen for incoming TCP connections
 #define LISTEN_PORT 4000
@@ -99,11 +100,19 @@ void loop() {
   while(!client.available()){
     delay(1);
   }
+  
   Serial.println("Client connected");
   // update the temperature variables
   updateTemps();
+
+  // print out what the client sent over
+  char clientData = client.read();
+  Serial.print("Client sent this: ");
+  Serial.println(clientData);
   
-  client.write(celsius);
+  // send data back to the client
+  server.write(celsius);
+  
   client.stop();
   Serial.println("Client disconnected");
 }
